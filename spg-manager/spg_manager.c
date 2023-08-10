@@ -90,10 +90,10 @@
  * its corresponding static key. This results in the default (detection/tracing)
  * branch being patched out, and the mitigation branch with the LFENCE
  * instruction being patched in; as this instruction disrupts speculation
- * sufficiently, the gadget can no longer be speculatived executed.
- * Consequently, once the attacker's gadget is dismantled, and with it their
- * speculative probing primitive, they are no longer able to use this attack
- * gadget to launch speculative probes. The detected attack was mitigated.
+ * sufficiently, the gadget can no longer be exploited. Consequently, once
+ * the attacker's gadget is dismantled, and with it their speculative probing
+ * primitive, they are no longer able to use this attack gadget to launch
+ * speculative probes. The detected attack was, thus, mitigated.
  */
 
 #include <linux/module.h>
