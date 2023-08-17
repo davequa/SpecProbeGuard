@@ -3983,8 +3983,10 @@ void CodeGenFunction::EmitTrapCheck(llvm::Value *Checked,
 		// SPG_save_reg_state(M, Builder);
 
 		// Create a wrapper function for the ubsantrap intrinsic, which we will
-		// insert into a register through a CMOV instruction depending on whether
-		// the CFI check on the indirect call's function pointer failed.
+		// insert into a register; through a CMOV instruction, depending on whether
+		// the CFI check on the indirect call's function pointer failed, we will
+		// replace it with the real indirect call target in this register or not.
+		// The ptr in the register will then be called.
 		llvm::FunctionType *TempFuncType = llvm::FunctionType::get(
 			llvm::Type::getVoidTy(M->getContext()), false);
 		llvm::Function *TempFunc = llvm::Function::Create(TempFuncType,
@@ -4046,8 +4048,8 @@ void CodeGenFunction::EmitTrapCheck(llvm::Value *Checked,
 
 		// Check result of prior TEST, CMOV the indirect call func ptr to the
 		// register we will call later (with either the indirect call's function
-		// pointer, or the trap function if the CFI test fails.
-		llvm::InlineAsm *IACmovzq = llvm::InlineAsm::get(
+		// pointer, or the trap function if the CFI test failed.
+		llvm::InlineAsm *IACmovnzq = llvm::InlineAsm::get(
 			llvm::FunctionType::get(llvm::Type::getVoidTy(M->getContext()),
 				{SPG_IndCall_Callee.getFunctionPointer()->getType()}, false),
 			StringRef("cmovnzq $0, %rax\0A\091:"),
@@ -4056,7 +4058,7 @@ void CodeGenFunction::EmitTrapCheck(llvm::Value *Checked,
 			false,
 			llvm::InlineAsm::AD_ATT,
 			false);
-		Builder.CreateCall(IACmovzq, {SPG_IndCall_Callee.getFunctionPointer()});
+		Builder.CreateCall(IACmovnzq, {SPG_IndCall_Callee.getFunctionPointer()});
 
 		// Load back the register state from the stack, in case we actually need
 		// to execute the indirect call. Otherwise, this is for nothing.
