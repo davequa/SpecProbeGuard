@@ -1,4 +1,5 @@
-#include "/path/to/include/spg_static_branch_wrappers.h"
+#include "/home/daveq/Desktop/Projects/SpecProbeGuard/kernels/linux-6.6/include/spg_static_branch_wrappers.h"
+#include "/home/daveq/Desktop/Projects/SpecProbeGuard/kernels/linux-6.6/include/spg_prac_header.h"
 
 /*
  * The total set of static keys we use to apply reactive code transformation in
@@ -35,7 +36,6 @@ char *spg_covert_channel_base_entry_ptr =
  * be (speculatively) prefetched by an attacker triggering a booby trap.
  */
 DEFINE_PER_CPU(char *, spg_ind_call_entry_ptr);
-// DEFINE_PER_CPU(uint64_t, spg_ind_call_entry_ptr);
 
 /*
  * Export all symbols relevant to the speculative probe defence to be
